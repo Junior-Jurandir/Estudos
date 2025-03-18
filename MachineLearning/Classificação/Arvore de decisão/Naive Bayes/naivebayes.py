@@ -15,18 +15,24 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    classification_report,
+)
 from yellowbrick.classifier import ConfusionMatrix
 
 """## Importação dos Dados"""
 
-base = pd.read_csv('insurance.csv')
+base = pd.read_csv("insurance.csv")
 base = base.dropna()
 
 """
 ## Remoção da coluna Unnamed: 0"""
 
-base = base.drop('Unnamed: 0', axis=1)
+base = base.drop("Unnamed: 0", axis=1)
 base
 
 """## Verificar o Shape da base de dados"""
@@ -36,23 +42,55 @@ base.shape
 """## Definição das variáveis"""
 
 y = base.iloc[:, 7].values
-X = base.iloc[:, [0,1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]].values
+X = base.iloc[
+    :,
+    [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+    ],
+].values
 
 """## Encodificação dos dados"""
 
 labelencoder = LabelEncoder()
 
 for i in range(X.shape[1]):
-  if X[:, i].dtype == 'object':
-    X[:, i] = labelencoder.fit_transform(X[:, i])
+    if X[:, i].dtype == "object":
+        X[:, i] = labelencoder.fit_transform(X[:, i])
 
 """## Sepração dos dados em treino e teste"""
 
 # X idependentes
 # y dependente
 # Alterar o parametro random_state gera divisões diferentes entre treino e
-## teste e consequentemente pode melhorar ou piorar o resultado do modelo
-X_treinamento, X_teste, y_treinamento, y_teste = train_test_split(X, y, test_size=0.3, random_state=0)
+# teste e consequentemente pode melhorar ou piorar o resultado do modelo
+X_treinamento, X_teste, y_treinamento, y_teste = train_test_split(
+    X, y, test_size=0.3, random_state=0
+)
 
 """## Criação do modelo"""
 
@@ -67,17 +105,17 @@ print(previsoes)
 """### Resultado dos Testes"""
 
 accuracy = accuracy_score(y_teste, previsoes)
-precision = precision_score(y_teste, previsoes, average='weighted')
-recall = recall_score(y_teste, previsoes, average='weighted')
-f1 = f1_score(y_teste, previsoes, average='weighted')
-print(f'Acuracia: {accuracy}, precisão: {precision}, Recall: {recall}, F1: {f1}')
+precision = precision_score(y_teste, previsoes, average="weighted")
+recall = recall_score(y_teste, previsoes, average="weighted")
+f1 = f1_score(y_teste, previsoes, average="weighted")
+print(f"Acuracia: {accuracy}, precisão: {precision}, Recall: {recall}, F1: {f1}")
 
 report = classification_report(y_teste, previsoes)
 print(report)
 
-#y_treinamento = labelencoder.inverse_transform(y_treinamento)
-#y_teste = labelencoder.inverse_transform(y_teste)
-confusao = ConfusionMatrix(modelo, classes = ['Severe','Mild','Moderate'])
+# y_treinamento = labelencoder.inverse_transform(y_treinamento)
+# y_teste = labelencoder.inverse_transform(y_teste)
+confusao = ConfusionMatrix(modelo, classes=["Severe", "Mild", "Moderate"])
 confusao.fit(X_treinamento, y_treinamento)
 confusao.score(X_teste, y_teste)
 confusao.show()
